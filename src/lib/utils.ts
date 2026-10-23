@@ -1,11 +1,11 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function calculateAge(birthday: Date, now = new Date()): number {
+export function calculateAge(birthday: Date, now = new Date()): number {
   let age = now.getFullYear() - birthday.getFullYear();
   let monthDiff = now.getMonth() - birthday.getMonth();
 
@@ -18,5 +18,3 @@ function calculateAge(birthday: Date, now = new Date()): number {
 
   return age;
 }
-
-export { cn, calculateAge };
