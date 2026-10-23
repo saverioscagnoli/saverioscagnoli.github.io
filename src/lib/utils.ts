@@ -18,3 +18,15 @@ export function calculateAge(birthday: Date, now = new Date()): number {
 
   return age;
 }
+
+export function random(min: number, max: number): number {
+  return min + Math.random() * (max - min);
+}
+
+export function randomInt(min: number, max: number): number {
+  return Math.floor(random(min, max + 1));
+}
+
+export function pick<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}

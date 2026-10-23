@@ -19,6 +19,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       className={cn(
         "group flex flex-col gap-2 p-4",
         "border border-white",
+        "backdrop-blur-lg",
         "hover:bg-white hover:text-black",
         className
       )}

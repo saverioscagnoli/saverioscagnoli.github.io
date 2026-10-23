@@ -24,6 +24,12 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "DOS-V";
+  src: url("dos-v.woff") format("woff");
+  font-display: swap;
+}
+
 body {
   font-family: "SperryPC";
   font-size: 16px;

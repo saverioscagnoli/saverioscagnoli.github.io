@@ -46,20 +46,35 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
+    name: "Karna",
+    description:
+      "Game framework inspired by love2d, made in rust, with js and lua scripting.",
+    url: "https://github.com/saverioscagnoli/karna"
+  },
+  {
     name: "WWWidgets",
     description:
-      "A widget framework for Wayland compositors, built with webview2gtk. All the power of the web on the desktop!",
+      "A widget framework for Wayland compositors, built with webkit2gtk.",
     url: "https://github.com/saverioscagnoli/wwwidgets"
   },
   {
+    name: "wbg",
+    description: "Simple and lightweight wallpaper daemon for Wayland.",
+    url: "https://github.com/saverioscagnoli/wbg"
+  },
+  {
     name: "pls",
-    description:
-      "A modern, highly customizable version of ls, plus various file system utilities.",
+    description: "Modern and customizable folder listng tool.",
     url: "https://github.com/saverioscagnoli/pls"
   },
   {
-    name: "Karna",
-    description: "A 2D (and hopefully soon 3D) game engine based on wgpu.",
-    url: "https://github.com/saverioscagnoli/karna"
+    name: "traccia",
+    description: "Customizable and flexible logging solution for Rust.",
+    url: "https://github.com/saverioscagnoli/traccia"
+  },
+  {
+    name: "figura",
+    description: "Fast and small templating engine for Rust.",
+    url: "https://github.com/saverioscagnoli/figura"
   }
 ];
