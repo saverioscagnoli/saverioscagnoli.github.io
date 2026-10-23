@@ -2,36 +2,36 @@
 
 @font-face {
   font-family: "Fixed";
-  src: url("Fixed16.woff2") format("woff2");
+  src: url("/Fixed16.woff2") format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Iosevka Term";
-  src: url("iosevka-term.woff2") format("woff2");
+  src: url("/iosevka-term.woff2") format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "IBM XGA-AI";
-  src: url("ibm-xga-ai.woff") format("woff");
+  src: url("/ibm-xga-ai.woff") format("woff");
   font-display: swap;
 }
 
 @font-face {
   font-family: "SperryPC";
-  src: url("sperry-pc.woff") format("woff");
+  src: url("/sperry-pc.woff") format("woff");
   font-display: swap;
 }
 
 @font-face {
   font-family: "DOS-V";
-  src: url("dos-v.woff") format("woff");
+  src: url("/dos-v.woff") format("woff");
   font-display: swap;
 }
 
 body {
-  font-family: "SperryPC";
+  font-family: "SperryPC", monospace;
   font-size: 16px;
   font-smooth: never;
   text-rendering: optimizeSpeed;
