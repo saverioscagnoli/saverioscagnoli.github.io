@@ -1,174 +1,160 @@
-import * as THREE from "three";
-import { useRef, useEffect } from "react";
+import type React from "react";
+import { useEffect, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import {
+  Mesh,
+  NearestFilter,
+  OrthographicCamera,
+  PlaneGeometry,
+  Scene,
+  ShaderMaterial,
+  Vector2,
+  WebGLRenderTarget
+} from "three";
 
-interface PixelatedEffectProps {
+type CrtEffectProps = {
+  aberration?: number;
+  curvature?: number;
+  scanlines?: number;
+  flicker?: number;
   pixelSize?: number;
-}
+};
 
-const PixelatedCRTEffect: React.FC<PixelatedEffectProps> = ({
+const vertexShader = /* glsl */ `
+  varying vec2 vUv;
+
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = /* glsl */ `
+  uniform sampler2D tDiffuse;
+  uniform vec2 resolution;
+  uniform float time;
+  uniform float aberration;
+  uniform float curvature;
+  uniform float scanlines;
+  uniform float flicker;
+
+  varying vec2 vUv;
+
+  vec2 warp(vec2 uv) {
+    vec2 c = uv * 2.0 - 1.0;
+    c *= 1.0 + curvature * dot(c, c);
+    return c * 0.5 + 0.5;
+  }
+
+  void main() {
+    vec2 uv = warp(vUv);
+
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      return;
+    }
+
+    vec2 offset = (uv - 0.5) * 2.0 * aberration / resolution;
+
+    vec3 color = vec3(
+      texture2D(tDiffuse, uv + offset).r,
+      texture2D(tDiffuse, uv).g,
+      texture2D(tDiffuse, uv - offset).b
+    );
+
+    if (mod(floor(gl_FragCoord.y), 3.0) == 0.0) {
+      color *= 1.0 - scanlines;
+    }
+
+    vec2 v = vUv * (1.0 - vUv.yx);
+    color *= pow(v.x * v.y * 16.0, 0.2);
+
+    color *= 1.0 - flicker + flicker * sin(time * 8.0);
+
+    gl_FragColor = vec4(color, 1.0);
+
+    #include <colorspace_fragment>
+  }
+`;
+
+const CrtEffect: React.FC<CrtEffectProps> = ({
+  aberration = 3,
+  curvature = 0.04,
+  scanlines = 0.3,
+  flicker = 0.02,
   pixelSize = 4
 }) => {
-  const composerRef = useRef<any>(null);
-  const timeRef = useRef(0);
-  const quadSceneRef = useRef<THREE.Scene | null>(null);
-  const quadCameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const quadGeometryRef = useRef<THREE.PlaneGeometry | null>(null);
-  const quadMaterialRef = useRef<THREE.ShaderMaterial | null>(null);
-  const quadMeshRef = useRef<THREE.Mesh | null>(null);
-
   const { gl, scene, camera, size } = useThree();
 
-  useEffect(() => {
-    if (!quadSceneRef.current) {
-      quadSceneRef.current = new THREE.Scene();
-      quadCameraRef.current = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-      quadGeometryRef.current = new THREE.PlaneGeometry(2, 2);
+  const target = useMemo(
+    () =>
+      new WebGLRenderTarget(1, 1, {
+        minFilter: NearestFilter,
+        magFilter: NearestFilter
+      }),
+    []
+  );
 
-      quadMaterialRef.current = new THREE.ShaderMaterial({
-        uniforms: {
-          tDiffuse: { value: null },
-          time: { value: 0 },
-          resolution: { value: new THREE.Vector2(size.width, size.height) }
-        },
-        vertexShader: `
-          varying vec2 vUv;
+  const { quadScene, quadCamera, geometry, material } = useMemo(() => {
+    let geometry = new PlaneGeometry(2, 2);
+    let material = new ShaderMaterial({
+      uniforms: {
+        tDiffuse: { value: target.texture },
+        resolution: { value: new Vector2(1, 1) },
+        time: { value: 0 },
+        aberration: { value: 0 },
+        curvature: { value: 0 },
+        scanlines: { value: 0 },
+        flicker: { value: 0 }
+      },
+      vertexShader,
+      fragmentShader
+    });
 
-          void main() {
-            vUv = uv;
-            gl_Position = vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform sampler2D tDiffuse;
-          uniform float time;
-          uniform vec2 resolution;
-          varying vec2 vUv;
+    let quadScene = new Scene();
+    quadScene.add(new Mesh(geometry, material));
 
-          // --- CRT screen curvature ---
-          vec2 curveRemapUV(vec2 uv) {
-            uv = uv * 2.0 - 1.0;
-            vec2 offset = abs(uv.yx) / vec2(4.0, 4.0); // higher = gentler curve
-            uv += uv * offset * offset * 0.5;          // 0.5 multiplier softens more
-            uv = uv * 0.5 + 0.5;
-            return uv;
-          }
-
-          void main() {
-            vec2 uv = curveRemapUV(vUv);
-
-            // Discard outside curved area - make it black
-            if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-              gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-              return;
-            }
-
-            vec4 color = texture2D(tDiffuse, uv);
-
-            // --- Scanlines ---
-            float scanIntensity = 0.08;
-            float scanFreq = 2.5;
-            float scanline = 0.5 + 0.5 * sin(uv.y * resolution.y * scanFreq);
-            color.rgb *= 0.9 + 0.1 * scanline;
-
-            float strongLine = smoothstep(0.95, 1.0, sin(uv.y * resolution.y * 0.3));
-            color.rgb *= 1.0 - strongLine * 0.1;
-
-            // --- Vignette ---
-            vec2 vignetteUV = vUv * (1.0 - vUv.yx);
-            float vignette = vignetteUV.x * vignetteUV.y * 15.0;
-            vignette = pow(vignette, 0.25);
-            color.rgb *= vignette;
-
-            // --- Chromatic aberration ---
-            float aberration = 0.002;
-            float r = texture2D(tDiffuse, uv + vec2(aberration, 0.0)).r;
-            float b = texture2D(tDiffuse, uv - vec2(aberration, 0.0)).b;
-            color.r = r;
-            color.b = b;
-
-            // --- Flicker ---
-            float flicker = 0.98 + 0.02 * sin(time * 20.0);
-            color.rgb *= flicker;
-
-            // --- Green tint ---
-            color.g *= 1.05;
-
-            // --- Glass reflection hint ---
-            vec3 glassTint = vec3(0.05, 0.08, 0.1);
-            float curveAmount = pow(abs(uv.x - 0.5) + abs(uv.y - 0.5), 2.0);
-            color.rgb += glassTint * curveAmount * 0.6;
-
-            // --- Glow center (emphasize curvature) ---
-            float edgeDist = distance(vUv, vec2(0.5));
-            float glow = smoothstep(0.8, 0.2, edgeDist);
-            color.rgb *= 0.9 + 0.1 * glow;
-
-            gl_FragColor = color;
-          }
-        `
-      });
-
-      quadMeshRef.current = new THREE.Mesh(
-        quadGeometryRef.current,
-        quadMaterialRef.current
-      );
-      quadSceneRef.current.add(quadMeshRef.current);
-    }
-
-    // Cleanup on unmount
-    return () => {
-      if (quadGeometryRef.current) quadGeometryRef.current.dispose();
-      if (quadMaterialRef.current) quadMaterialRef.current.dispose();
-      if (composerRef.current?.renderTarget)
-        composerRef.current.renderTarget.dispose();
+    return {
+      quadScene,
+      quadCamera: new OrthographicCamera(-1, 1, 1, -1, 0, 1),
+      geometry,
+      material
     };
-  }, []);
+  }, [target]);
 
-  useFrame((_, delta) => {
-    timeRef.current += delta;
+  useEffect(() => {
+    let buffer = gl.getDrawingBufferSize(new Vector2());
 
-    const w = Math.floor(size.width / pixelSize);
-    const h = Math.floor(size.height / pixelSize);
+    target.setSize(
+      Math.max(1, Math.floor(buffer.x / pixelSize)),
+      Math.max(1, Math.floor(buffer.y / pixelSize))
+    );
+    material.uniforms.resolution.value.copy(buffer);
+  }, [gl, size, pixelSize, target, material]);
 
-    if (!composerRef.current) {
-      const renderTarget = new THREE.WebGLRenderTarget(w, h, {
-        minFilter: THREE.NearestFilter,
-        magFilter: THREE.NearestFilter,
-        format: THREE.RGBAFormat
-      });
+  useEffect(
+    () => () => {
+      target.dispose();
+      geometry.dispose();
+      material.dispose();
+    },
+    [target, geometry, material]
+  );
 
-      composerRef.current = { renderTarget, w, h };
-    } else if (composerRef.current.w !== w || composerRef.current.h !== h) {
-      composerRef.current.renderTarget.setSize(w, h);
-      composerRef.current.w = w;
-      composerRef.current.h = h;
-    }
+  useFrame(({ clock }) => {
+    material.uniforms.time.value = clock.elapsedTime;
+    material.uniforms.aberration.value = aberration;
+    material.uniforms.curvature.value = curvature;
+    material.uniforms.scanlines.value = scanlines;
+    material.uniforms.flicker.value = flicker;
 
-    // Render main scene to render target
-    gl.setRenderTarget(composerRef.current.renderTarget);
+    gl.setRenderTarget(target);
     gl.render(scene, camera);
     gl.setRenderTarget(null);
-    gl.clear();
-
-    // Update shader uniforms
-    if (quadMaterialRef.current) {
-      quadMaterialRef.current.uniforms.tDiffuse.value =
-        composerRef.current.renderTarget.texture;
-      quadMaterialRef.current.uniforms.time.value = timeRef.current;
-      quadMaterialRef.current.uniforms.resolution.value.set(
-        size.width,
-        size.height
-      );
-    }
-
-    // Render quad with effects to screen
-    if (quadSceneRef.current && quadCameraRef.current) {
-      gl.render(quadSceneRef.current, quadCameraRef.current);
-    }
+    gl.render(quadScene, quadCamera);
   }, 1);
 
   return null;
 };
 
-export { PixelatedCRTEffect };
+export { CrtEffect };

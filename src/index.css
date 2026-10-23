@@ -1,66 +1,47 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: "DOS-V";
-  src: url("/DOS-V.ttf");
-  font-weight: normal;
-  font-style: normal;
-  font-smooth: never;
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Fixed";
+  src: url("Fixed16.woff2") format("woff2");
+  font-display: swap;
 }
 
 @font-face {
-  font-family: "IBM-Model3x";
-  src: url("/IBM-Model3x.ttf");
-  font-weight: normal;
-  font-style: normal;
-  font-smooth: never;
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Iosevka Term";
+  src: url("iosevka-term.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM XGA-AI";
+  src: url("ibm-xga-ai.woff") format("woff");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SperryPC";
+  src: url("sperry-pc.woff") format("woff");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DOS-V";
+  src: url("dos-v.woff") format("woff");
+  font-display: swap;
 }
 
 body {
-  color: white;
-  font-family: "DOS-V";
-  image-rendering: pixelated;
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: grayscale;
-  font-smooth: never;
-  text-rendering: geometricPrecision;
-  line-height: 1.2;
-  image-rendering: -moz-crisp-edges;
-  image-rendering: -webkit-crisp-edges;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
+  font-family: "SperryPC";
   font-size: 16px;
-}
-
-* {
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: grayscale;
   font-smooth: never;
-  text-rendering: geometricPrecision;
-
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  perspective: 1000;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: none;
+  background-color: black;
+  color: white;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-div {
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.page {
+  width: 800px;
+  max-width: 100%;
+  margin-left: max(0px, round(down, (100% - 800px) / 2, 1px));
 }
