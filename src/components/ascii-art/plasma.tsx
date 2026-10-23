@@ -1,8 +1,5 @@
 import type React from "react";
-import {
-  useAsciiCanvas,
-  type AsciiDraw
-} from "~/components/hooks/use-ascii-canvas";
+import { useAsciiCanvas, type AsciiDraw } from "~/hooks/use-ascii-canvas";
 
 const RAMP = " .:-=+*#%@";
 

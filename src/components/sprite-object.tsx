@@ -2,7 +2,7 @@ import type React from "react";
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { SpriteMaterial } from "three";
-import { useSpriteTexture } from "~/components/hooks/use-sprite-texture";
+import { useSpriteTexture } from "~/hooks/use-sprite-texture";
 
 type SpriteObjectProps = {
   url: string;

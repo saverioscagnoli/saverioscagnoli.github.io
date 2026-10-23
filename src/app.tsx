@@ -42,7 +42,7 @@ const App = () => {
           <CrtEffect pixelSize={3} />
         </Canvas>
       </div>
-      <div className={cn("fixed inset-0 -z-10", "backdrop-blur-[2px]")} />
+      <div className={cn("fixed inset-0 -z-10", "backdrop-blur-[4px]")} />
       <Topbar className={cn("sticky top-0 z-10", "bg-black")} />
       <div className={cn("page")}>
         <h1 className={cn("text-[48px]")}>Saverio Scagnoli</h1>
@@ -70,7 +70,12 @@ const App = () => {
           <p className={cn("text-left whitespace-pre font-[Iosevka_Term]")}>
             {TUX}
           </p>
-          <p className={cn("text-left whitespace-pre font-[Iosevka_Term]")}>
+          <p
+            className={cn(
+              "text-left whitespace-pre font-[Iosevka_Term]",
+              "text-[#d70a53]"
+            )}
+          >
             {DEBIAN}
           </p>
         </div>

@@ -1,18 +1,18 @@
 import type React from "react";
 import { useState } from "react";
 import { cn, pick } from "~/lib/utils";
-import { Button } from "./ui/button";
-import { GithubIcon } from "./icons/github";
-import { WrenchIcon } from "./icons/wrench";
-import { FolderIcon } from "./icons/folder";
-import { LinkedinIcon } from "./icons/linkedin";
-import { SpotifyIcon } from "./icons/spotify";
-import { BouncingBalls } from "./ascii-art/bouncing-balls";
-import { Fireworks } from "./ascii-art/fireworks";
-import { Plasma } from "./ascii-art/plasma";
-import { Fire } from "./ascii-art/fire";
-import { RadioWaves } from "./ascii-art/radio-waves";
-import { Starfield } from "./ascii-art/starfield";
+import { Button } from "~/components/ui/button";
+import { GithubIcon } from "~/components/icons/github";
+import { WrenchIcon } from "~/components/icons/wrench";
+import { FolderIcon } from "~/components/icons/folder";
+import { LinkedinIcon } from "~/components/icons/linkedin";
+import { SpotifyIcon } from "~/components/icons/spotify";
+import { BouncingBalls } from "~/components/ascii-art/bouncing-balls";
+import { Fireworks } from "~/components/ascii-art/fireworks";
+import { Plasma } from "~/components/ascii-art/plasma";
+import { Fire } from "~/components/ascii-art/fire";
+import { RadioWaves } from "~/components/ascii-art/radio-waves";
+import { Starfield } from "~/components/ascii-art/starfield";
 
 const ANIMATIONS = [
   Plasma,
