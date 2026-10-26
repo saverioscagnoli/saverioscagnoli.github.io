@@ -5,6 +5,8 @@ type ThreeContext = {
   renderer: THREE.WebGLRenderer;
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
+  reduced: boolean;
+  invalidate: () => void;
 };
 
 type SetupReturn = {
@@ -37,8 +39,21 @@ function useThree(setup: Setup, pixelSize?: number, onReady?: () => void) {
 
     let result: Exclude<SetupReturn, void> = {};
     let disposed = false;
+    let reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
 
-    Promise.resolve(setupRef.current({ renderer, scene, camera }))
+    const invalidate = () => {
+      if (!reduced || frame) return;
+
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        renderer.render(scene, camera);
+      });
+    };
+
+    Promise.resolve(
+      setupRef.current({ renderer, scene, camera, reduced, invalidate })
+    )
       .then(r => {
         let next = r || {};
 
@@ -49,6 +64,7 @@ function useThree(setup: Setup, pixelSize?: number, onReady?: () => void) {
 
         result = next;
         result.resize?.();
+        invalidate();
       })
       .catch(console.error)
       .then(() => {
@@ -65,6 +81,7 @@ function useThree(setup: Setup, pixelSize?: number, onReady?: () => void) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       result.resize?.();
+      invalidate();
     };
 
     let observer = new ResizeObserver(resize);
@@ -74,16 +91,19 @@ function useThree(setup: Setup, pixelSize?: number, onReady?: () => void) {
 
     let clock = new THREE.Timer();
 
-    renderer.setAnimationLoop(time => {
-      clock.update(time);
-      let dt = clock.getDelta();
-      result.update?.(dt, clock.getElapsed());
-      renderer.render(scene, camera);
-    });
+    if (!reduced) {
+      renderer.setAnimationLoop(time => {
+        clock.update(time);
+        let dt = clock.getDelta();
+        result.update?.(dt, clock.getElapsed());
+        renderer.render(scene, camera);
+      });
+    }
 
     return () => {
       disposed = true;
       renderer.setAnimationLoop(null);
+      cancelAnimationFrame(frame);
       observer.disconnect();
       result.dispose?.();
       renderer.dispose();

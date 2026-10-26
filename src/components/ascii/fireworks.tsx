@@ -22,7 +22,7 @@ type Spark = {
 
 const SPARKS = "@*+:.";
 const GRAVITY = 3;
-const LAUNCH_RATE = 7;
+const LAUNCH_RATE = 4;
 
 const createFireworks = (): AsciiDraw => {
   let rockets: Rocket[] = [];

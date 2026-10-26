@@ -10,20 +10,22 @@ const PIXEL_SIZE = 2;
 
 const createGlow = () => {
   let canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 32;
+  canvas.width = canvas.height = 3;
 
   let ctx = canvas.getContext("2d")!;
-  let gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
 
-  gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
-  gradient.addColorStop(0.15, "rgba(255, 255, 255, 0.5)");
-  gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.15)");
-  gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+  ctx.fillRect(1, 0, 1, 3);
+  ctx.fillRect(0, 1, 3, 1);
+  ctx.fillStyle = "white";
+  ctx.fillRect(1, 1, 1, 1);
 
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 32, 32);
+  let texture = new THREE.CanvasTexture(canvas);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
 
-  return new THREE.CanvasTexture(canvas);
+  return texture;
 };
 
 type SpaceProps = {
@@ -35,10 +37,11 @@ const Space: React.FC<SpaceProps> = ({
   onReady,
   ...props
 }) => {
-  let ref = useThree(async ({ scene, camera }) => {
+  let ref = useThree(async ({ scene, camera, reduced, invalidate }) => {
     let positions = new Float32Array(COUNT * 3);
     let phases = new Float32Array(COUNT);
     let speeds = new Float32Array(COUNT);
+    let sizes = new Float32Array(COUNT);
 
     for (let i = 0; i < COUNT; i++) {
       let v = new THREE.Vector3()
@@ -47,20 +50,22 @@ const Space: React.FC<SpaceProps> = ({
       positions.set([v.x, v.y, v.z], i * 3);
       phases[i] = rng(0, Math.PI * 2);
       speeds[i] = rng(0.5, 3);
+      sizes[i] = Math.random() < 0.15 ? 3 : 1;
     }
 
     let geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geo.setAttribute("phase", new THREE.BufferAttribute(phases, 1));
     geo.setAttribute("speed", new THREE.BufferAttribute(speeds, 1));
+    geo.setAttribute("starSize", new THREE.BufferAttribute(sizes, 1));
 
     let glow = createGlow();
     let stars = new THREE.Points(
       geo,
       new THREE.PointsMaterial({
         color: 0xffffff,
-        size: 2,
-        sizeAttenuation: true,
+        size: PIXEL_SIZE,
+        sizeAttenuation: false,
         map: glow,
         transparent: true,
         depthWrite: false,
@@ -79,9 +84,11 @@ const Space: React.FC<SpaceProps> = ({
           `#include <common>
           attribute float phase;
           attribute float speed;
+          attribute float starSize;
           uniform float time;
           varying float vFlicker;`
         )
+        .replace("gl_PointSize = size;", "gl_PointSize = size * starSize;")
         .replace(
           "#include <begin_vertex>",
           `#include <begin_vertex>
@@ -106,19 +113,21 @@ const Space: React.FC<SpaceProps> = ({
     scene.add(stars);
 
 
-    let bodies: { mesh: THREE.Object3D; scale: number }[] = await Promise.all([
-      ...Array.from({ length: 6 }, (_, i) =>
-        createSprite(`planet-${i + 1}.webm`).then(mesh => ({ mesh, scale: 1.8 }))
-      ),
-      createSprite("blackhole-1.webm").then(mesh => ({ mesh, scale: 2.5 }))
-    ]);
+    let blackhole = await createSprite("blackhole-1.webm", {
+      still: reduced,
+      onFrame: invalidate
+    });
+
+    let bodies: { mesh: THREE.Object3D; scale: number }[] = [
+      { mesh: blackhole, scale: 3.2 }
+    ];
 
     let clusters = Array.from({ length: 3 }, () => createAsteroidCluster());
     let asteroids = clusters.flatMap(({ asteroids }) => asteroids);
 
     bodies.push(...clusters.map(({ group }) => ({ mesh: group, scale: rng(3, 4.5) })));
 
-    let galaxies = Array.from({ length: 3 }, () => createGalaxy());
+    let galaxies = Array.from({ length: 6 }, () => createGalaxy());
 
     bodies.push(...galaxies.map(({ group }) => ({ mesh: group, scale: rng(2.5, 3.5) })));
 
@@ -209,7 +218,7 @@ const Space: React.FC<SpaceProps> = ({
     return {
       update: (dt, elapsed) => {
         time.value = elapsed;
-        stars.rotation.y += dt * 0.003;
+        stars.rotation.y += dt * 0.0001;
 
         for (let { mesh, spin } of asteroids) {
           mesh.rotation.x += spin.x * dt;

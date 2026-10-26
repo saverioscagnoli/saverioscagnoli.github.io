@@ -9,7 +9,6 @@ import {
   WrenchIcon
 } from "~/components/icons";
 import { Space } from "~/components/three";
-import { Loader } from "~/components/ui/loader";
 import { ProjectCard } from "~/components/ui/project-card";
 import { calculateAge, cn } from "~/lib/utils";
 
@@ -57,12 +56,16 @@ const HomePage = () => {
 
   return (
     <div className={cn("page", "py-4", "relative")}>
-      <Loader visible={!ready} />
       <Space
-        className={cn("w-full h-full", "fixed inset-0", "-z-10")}
+        className={cn(
+          "w-full h-full",
+          "fixed inset-0",
+          "-z-10",
+          "transition-opacity duration-1000",
+          ready ? "opacity-100" : "opacity-0"
+        )}
         onReady={() => setReady(true)}
       />
-      <div className={cn("fixed inset-0", "-z-10", "backdrop-blur-xs")} />
       <h1 className={cn("text-[57px]")}>Saverio Scagnoli</h1>
       <h2 className={cn("text-[38px]")}>
         System programmer, open source enthusiast

@@ -1,6 +1,14 @@
 import * as THREE from "three";
 
-async function createSprite(path: string): Promise<THREE.Mesh> {
+type SpriteOptions = {
+  still?: boolean;
+  onFrame?: () => void;
+};
+
+async function createSprite(
+  path: string,
+  { still, onFrame }: SpriteOptions = {}
+): Promise<THREE.Mesh> {
   return new Promise((res, rej) => {
     let video = document.createElement("video");
     video.src = `${import.meta.env.BASE_URL}${path}`;
@@ -11,6 +19,13 @@ async function createSprite(path: string): Promise<THREE.Mesh> {
 
     let videoTexture = new THREE.VideoTexture(video);
     videoTexture.colorSpace = THREE.SRGBColorSpace;
+
+    if (still) {
+      video.requestVideoFrameCallback(() => {
+        video.pause();
+        onFrame?.();
+      });
+    }
 
     let mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(1, 1),
