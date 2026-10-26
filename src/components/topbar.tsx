@@ -8,6 +8,7 @@ import {
   SpotifyIcon,
   WrenchIcon
 } from "~/components/icons";
+import { Fireworks } from "~/components/ascii/fireworks";
 
 const Topbar = () => {
   return (
@@ -21,10 +22,11 @@ const Topbar = () => {
         "border-b border-b-[#363636]"
       )}
     >
+      <Fireworks  className={cn("w-full h-full", "absolute", "-z-10")} />
       <div className={cn("h-full", "flex gap-4 items-center")}>
         <Button leftIcon={<HomeIcon />} />
         <Button leftIcon={<GithubIcon />}>GitHub</Button>
-        <Button leftIcon={<LinkedinIcon />}>LinkeIn</Button>
+        <Button leftIcon={<LinkedinIcon />}>LinkedIn</Button>
         <Button leftIcon={<SpotifyIcon />}>Spotify</Button>
       </div>
       <div className={cn("h-full", "flex gap-4 items-center")}>

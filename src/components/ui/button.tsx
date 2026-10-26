@@ -15,8 +15,10 @@ const Button: React.FC<ButtonProps> = ({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-2",
-        "px-2 py-1",
-        "border border-white text-white",
+        "h-10 px-2",
+        !children && "aspect-square px-0",
+        "bg-black text-white",
+        "border border-white",
         "hover:bg-white hover:text-black"
       )}
       {...props}

@@ -17,4 +17,17 @@ export function calculateAge(birthday: Date, now = new Date()): number {
   }
 
   return age;
+
+}
+
+export function rng(min: number, max: number): number {
+  return min + Math.random() * (max - min);
+}
+
+export function rngInt(min: number, max: number): number {
+  return Math.floor(rng(min, max + 1));
+}
+
+export function pick<T>(arr: T[]): T{
+  return arr[Math.floor(Math.random() * arr.length)];
 }

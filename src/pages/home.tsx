@@ -1,3 +1,16 @@
+import { useState } from "react";
+import {
+  CIcon,
+  DevicesIcon,
+  LinuxIcon,
+  LuaIcon,
+  RustIcon,
+  WaylandIcon,
+  WrenchIcon
+} from "~/components/icons";
+import { Space } from "~/components/three";
+import { Loader } from "~/components/ui/loader";
+import { ProjectCard } from "~/components/ui/project-card";
 import { calculateAge, cn } from "~/lib/utils";
 
 export const TUX = `
@@ -40,13 +53,21 @@ export const DEBIAN = `
 `;
 
 const HomePage = () => {
+  const [ready, setReady] = useState<boolean>(false);
+
   return (
-    <div className={cn("page", "pt-4")}>
+    <div className={cn("page", "py-4", "relative")}>
+      <Loader visible={!ready} />
+      <Space
+        className={cn("w-full h-full", "fixed inset-0", "-z-10")}
+        onReady={() => setReady(true)}
+      />
+      <div className={cn("fixed inset-0", "-z-10", "backdrop-blur-xs")} />
       <h1 className={cn("text-[57px]")}>Saverio Scagnoli</h1>
       <h2 className={cn("text-[38px]")}>
         System programmer, open source enthusiast
       </h2>
-      <div className={cn("flex flex-col gap-4 pt-2 px-4")}>
+      <div data-space-avoid className={cn("flex flex-col gap-4 pt-2 px-4")}>
         <p>
           I'm a {calculateAge(new Date("2002-10-29"))}-year-old developer from
           Rome, studying computer science at La Sapienza.
@@ -73,6 +94,71 @@ const HomePage = () => {
         >
           {DEBIAN}
         </p>
+      </div>
+      <div className={cn("flex flex-col justify-center gap-4", "pt-4")}>
+        <h1 className={cn("text-[38px]")}>Projects</h1>
+        <ProjectCard
+          title="Karna"
+          desc="Cross-platform game framework with optional scripting in Lua / JS. Based on SDL3, no-std."
+          url="https://github.com/saverioscagnoli/karna"
+          tags={[
+            { text: "Rust", icon: <RustIcon /> },
+            { text: "C", icon: <CIcon /> },
+            { text: "Lua", icon: <LuaIcon /> },
+            { text: "Cross-Platform", icon: <DevicesIcon /> }
+          ]}
+        />
+        <ProjectCard
+          title="wwwidgets"
+          desc="Widget framework for Wayland compositors. Built with webkit. Desktop widgets with web tech!"
+          url="https://github.com/saverioscagnoli/wwwidgets"
+          tags={[
+            { text: "C", icon: <CIcon /> },
+            { text: "Linux", icon: <LinuxIcon /> },
+            { text: "Wayland", icon: <WaylandIcon /> }
+          ]}
+        />
+        <ProjectCard
+          title="pls"
+          desc="Modern and customizable listing tool + various filesystem utils."
+          url="https://github.com/saverioscagnoli/pls"
+          tags={[
+            { text: "Rust", icon: <RustIcon /> },
+            { text: "Tools", icon: <WrenchIcon /> },
+            { text: "Cross-Platform", icon: <DevicesIcon /> }
+          ]}
+        />
+        <ProjectCard
+          title="wbg"
+          desc="Simple and lightweight wallpaper daemon for Waylnad. With animated wallpapers support."
+          url="https://github.com/saverioscagnoli/wbg"
+          tags={[
+            { text: "Rust", icon: <RustIcon /> },
+            { text: "Tools", icon: <WrenchIcon /> },
+            { text: "Linux", icon: <LinuxIcon /> },
+            { text: "Wayland", icon: <WaylandIcon /> }
+          ]}
+        />
+        <ProjectCard
+          title="traccia"
+          desc="Customizable and flexible logging solution for Rust. (no-std too!)"
+          url="https://github.com/saverioscagnoli/traccia"
+          tags={[
+            { text: "Rust", icon: <RustIcon /> },
+            { text: "Tools", icon: <WrenchIcon /> },
+            { text: "Cross-Platform", icon: <DevicesIcon /> }
+          ]}
+        />
+        <ProjectCard
+          title="figura"
+          desc="Fast and small templating engine for Rust."
+          url="https://github.com/saverioscagnoli/figura"
+          tags={[
+            { text: "Rust", icon: <RustIcon /> },
+            { text: "Tools", icon: <WrenchIcon /> },
+            { text: "Cross-Platform", icon: <DevicesIcon /> }
+          ]}
+        />
       </div>
     </div>
   );

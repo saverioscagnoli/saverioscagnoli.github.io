@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router";
 
 const App = () => {
   return (
-    <div className={cn("w-full min-h-dvh", "bg-black")}>
+    <div className={cn("w-full min-h-dvh", "overflow-x-clip", "isolate", "bg-black")}>
       <Topbar />
       <div className={cn("w-full")}>
         <Routes>
