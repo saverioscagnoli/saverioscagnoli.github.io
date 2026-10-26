@@ -30,20 +30,19 @@ function createShootingStar(camera: THREE.PerspectiveCamera) {
   let traveled = 0;
   let life = 0;
   let maxLife = 0;
-  let wait = rng(2, 6);
+  let wait = 10;
 
   const spawn = () => {
-    let halfH =
-      DISTANCE * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    let halfH = DISTANCE * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     let halfW = halfH * camera.aspect;
     let angle = rng(0.3, 0.7);
 
-    head.set(
-      rng(-halfW, halfW),
-      rng(0, halfH),
-      camera.position.z - DISTANCE
+    head.set(rng(-halfW, halfW), rng(0, halfH), camera.position.z - DISTANCE);
+    dir.set(
+      Math.cos(angle) * (Math.random() < 0.5 ? -1 : 1),
+      -Math.sin(angle),
+      0
     );
-    dir.set(Math.cos(angle) * (Math.random() < 0.5 ? -1 : 1), -Math.sin(angle), 0);
     speed = halfH * rng(1.5, 2.5);
     length = halfH * rng(0.2, 0.35);
     traveled = 0;
@@ -63,7 +62,7 @@ function createShootingStar(camera: THREE.PerspectiveCamera) {
 
     if (life >= maxLife) {
       line.visible = false;
-      wait = rng(2, 7);
+      wait = rng(3, 8);
       return;
     }
 
