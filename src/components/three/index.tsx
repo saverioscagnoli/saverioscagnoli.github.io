@@ -1,6 +1,6 @@
 import { useThree } from "~/hooks/use-three";
 import * as THREE from "three";
-import { cn, rng } from "~/lib/utils";
+import { cn, rng, rngInt } from "~/lib/utils";
 import { createSprite } from "./sprite";
 import { createAsteroidCluster } from "./asteroid";
 import { createGalaxy } from "./galaxy";
@@ -113,14 +113,23 @@ const Space: React.FC<SpaceProps> = ({
     scene.add(stars);
 
 
-    let blackhole = await createSprite("blackhole-1.webm", {
-      still: reduced,
-      onFrame: invalidate
-    });
+    let spriteOptions = { still: reduced, onFrame: invalidate };
+    let planets = [1, 2, 3, 4, 5, 6]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, rngInt(2, 3));
 
-    let bodies: { mesh: THREE.Object3D; scale: number }[] = [
-      { mesh: blackhole, scale: 3.2 }
-    ];
+    let bodies: { mesh: THREE.Object3D; scale: number }[] = await Promise.all([
+      createSprite("blackhole-1.webm", spriteOptions).then(mesh => ({
+        mesh,
+        scale: 3.2
+      })),
+      ...planets.map(n =>
+        createSprite(`planet-${n}.webm`, spriteOptions).then(mesh => ({
+          mesh,
+          scale: 1.8
+        }))
+      )
+    ]);
 
     let clusters = Array.from({ length: 3 }, () => createAsteroidCluster());
     let asteroids = clusters.flatMap(({ asteroids }) => asteroids);
