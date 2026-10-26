@@ -1,4 +1,5 @@
 import type React from "react";
+import { useCallback, useRef } from "react";
 import { useAsciiCanvas, type AsciiDraw } from "~/hooks/use-ascii-canvas";
 import { rng, rngInt } from "~/lib/utils";
 
@@ -24,14 +25,14 @@ const SPARKS = "@*+:.";
 const GRAVITY = 3;
 const LAUNCH_RATE = 4;
 
-const createFireworks = (): AsciiDraw => {
+const createFireworks = (isActive: () => boolean): AsciiDraw => {
   let rockets: Rocket[] = [];
   let sparks: Spark[] = [];
 
   return (ctx, { columns, rows, cw, line }, _, delta) => {
     let squash = Math.min(1, rows / 8);
 
-    if (Math.random() < LAUNCH_RATE * delta) {
+    if (isActive() && Math.random() < LAUNCH_RATE * delta) {
       rockets.push({
         x: rngInt(2, Math.max(2, columns - 3)),
         y: rows,
@@ -95,8 +96,16 @@ const createFireworks = (): AsciiDraw => {
   };
 };
 
-const Fireworks: React.FC<React.ComponentProps<"canvas">> = props => {
-  const ref = useAsciiCanvas(createFireworks);
+type FireworksProps = {
+  active?: boolean;
+} & React.ComponentProps<"canvas">;
+
+const Fireworks: React.FC<FireworksProps> = ({ active = true, ...props }) => {
+  const activeRef = useRef(active);
+  activeRef.current = active;
+
+  const create = useCallback(() => createFireworks(() => activeRef.current), []);
+  const ref = useAsciiCanvas(create);
 
   return <canvas ref={ref} aria-hidden="true" {...props} />;
 };

@@ -4,9 +4,11 @@ import { cn, rng, rngInt } from "~/lib/utils";
 import { createSprite } from "./sprite";
 import { createAsteroidCluster } from "./asteroid";
 import { createGalaxy } from "./galaxy";
+import { createShootingStar } from "./shooting-star";
+import { createUfo } from "./ufo";
 
 const COUNT = 4000;
-const PIXEL_SIZE = 2;
+const PIXEL_SIZE = 3;
 
 const createGlow = () => {
   let canvas = document.createElement("canvas");
@@ -224,9 +226,17 @@ const Space: React.FC<SpaceProps> = ({
       }
     };
 
+    let shootingStar = createShootingStar(camera);
+    scene.add(shootingStar.line);
+
+    let ufo = createUfo(camera);
+    scene.add(ufo.ufo);
+
     return {
       update: (dt, elapsed) => {
         time.value = elapsed;
+        shootingStar.update(dt);
+        ufo.update(dt);
         stars.rotation.y += dt * 0.0001;
 
         for (let { mesh, spin } of asteroids) {
@@ -244,6 +254,8 @@ const Space: React.FC<SpaceProps> = ({
         stars.geometry.dispose();
         stars.material.dispose();
         glow.dispose();
+        shootingStar.dispose();
+        ufo.dispose();
 
         for (let { mesh } of asteroids) {
           mesh.geometry.dispose();

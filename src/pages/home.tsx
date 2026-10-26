@@ -55,7 +55,7 @@ const HomePage = () => {
   const [ready, setReady] = useState<boolean>(false);
 
   return (
-    <div className={cn("page", "py-4", "relative")}>
+    <div className={cn("page", "py-4", "relative", "bg-black/70")}>
       <Space
         className={cn(
           "w-full h-full",
@@ -99,7 +99,9 @@ const HomePage = () => {
         </p>
       </div>
       <div className={cn("flex flex-col justify-center gap-4", "pt-4")}>
-        <h1 className={cn("text-[38px]")}>Projects</h1>
+        <h1 id="projects" className={cn("text-[38px]", "scroll-mt-20")}>
+          Projects
+        </h1>
         <ProjectCard
           title="Karna"
           desc="Cross-platform game framework with optional scripting in Lua / JS. Based on SDL3, no-std."
