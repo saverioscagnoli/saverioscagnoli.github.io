@@ -10,6 +10,7 @@ import {
   WrenchIcon
 } from "~/components/icons";
 import { Fireworks } from "~/components/ascii/fireworks";
+import { Link } from "react-router";
 
 const Topbar = () => {
   const [hovered, setHovered] = useState<boolean>(false);
@@ -32,10 +33,24 @@ const Topbar = () => {
         className={cn("w-full h-full", "absolute", "-z-10")}
       />
       <div className={cn("h-full", "flex gap-4 items-center")}>
-        <Button leftIcon={<HomeIcon />} />
-        <Button leftIcon={<GithubIcon />}>GitHub</Button>
-        <Button leftIcon={<LinkedinIcon />}>LinkedIn</Button>
-        <Button leftIcon={<SpotifyIcon />}>Spotify</Button>
+        <Link to="/">
+          <Button leftIcon={<HomeIcon />} />
+        </Link>
+        <a href="https://github.com/saverioscagnoli" target="_blank">
+          <Button leftIcon={<GithubIcon />}>GitHub</Button>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/saverio-scagnoli-988463227/"
+          target="_blank"
+        >
+          <Button leftIcon={<LinkedinIcon />}>LinkedIn</Button>
+        </a>
+        <a
+          href="https://open.spotify.com/user/ngn6rl6jsbkxp9i8opc4lduee"
+          target="_blank"
+        >
+          <Button leftIcon={<SpotifyIcon />}>Spotify</Button>
+        </a>
       </div>
       <div className={cn("h-full", "flex gap-4 items-center")}>
         <Button leftIcon={<WrenchIcon />}>Tools</Button>
@@ -51,7 +66,9 @@ const Topbar = () => {
         >
           Projects
         </Button>
-        <Button leftIcon={<GithubIcon />}>Source</Button>
+        <a href="https://github.com/saverioscagnoli/saverioscagnoli.github.io">
+          <Button leftIcon={<GithubIcon />}>Source</Button>
+        </a>
       </div>
     </div>
   );
