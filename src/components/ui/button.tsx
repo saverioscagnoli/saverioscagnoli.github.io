@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({
         !children && "aspect-square px-0",
         "bg-black text-white",
         "border border-white",
-        "hover:bg-white hover:text-black"
+        "hover:bg-white hover:text-black hover:[text-shadow:none]"
       )}
       {...props}
     >

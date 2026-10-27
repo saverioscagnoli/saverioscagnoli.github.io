@@ -31,7 +31,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           "text-white",
           "border border-white",
           "cursor-pointer",
-          "hover:bg-white hover:text-black",
+          "hover:bg-white hover:text-black hover:[text-shadow:none]",
           "backdrop-blur-lg",
           className
         )}
