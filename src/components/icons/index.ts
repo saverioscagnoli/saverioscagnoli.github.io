@@ -12,3 +12,4 @@ export * from "./lua";
 export * from "./linux";
 export * from "./wayland";
 export * from "./arrow-right";
+export * from "./javascript";

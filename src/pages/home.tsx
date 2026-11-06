@@ -2,6 +2,8 @@ import { useState } from "react";
 import {
   CIcon,
   DevicesIcon,
+  GoIcon,
+  JavascriptIcon,
   LinuxIcon,
   LuaIcon,
   RustIcon,
@@ -108,8 +110,9 @@ const HomePage = () => {
           url="https://github.com/saverioscagnoli/karna"
           tags={[
             { text: "Rust", icon: <RustIcon /> },
-            { text: "C", icon: <CIcon /> },
             { text: "Lua", icon: <LuaIcon /> },
+            { text: "JS", icon: <JavascriptIcon /> },
+            { text: "C", icon: <CIcon /> },
             { text: "Cross-Platform", icon: <DevicesIcon /> }
           ]}
         />
@@ -128,7 +131,7 @@ const HomePage = () => {
           desc="Modern and customizable listing tool + various filesystem utils."
           url="https://github.com/saverioscagnoli/pls"
           tags={[
-            { text: "Rust", icon: <RustIcon /> },
+            { text: "Go", icon: <GoIcon /> },
             { text: "Tools", icon: <WrenchIcon /> },
             { text: "Cross-Platform", icon: <DevicesIcon /> }
           ]}
