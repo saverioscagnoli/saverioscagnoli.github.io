@@ -53,6 +53,47 @@ export const DEBIAN = `
              \`\`\`\`"
 `;
 
+export const GENTOO = `
+{1}         -/oyddmdhs+:.
+     -o{2}dNMMMMMMMMNNmhy+{1}-\`
+   -y{2}NMMMMMMMMMMMNNNmmdhy{1}+-
+ \`o{2}mMMMMMMMMMMMMNmdmmmmddhhy{1}/\`
+ om{2}MMMMMMMMMMMN{1}hhyyyo{2}hmdddhhhd{1}o\`
+.y{2}dMMMMMMMMMMd{1}hs++so/s{2}mdddhhhhdm{1}+\`
+ oy{2}hdmNMMMMMMMN{1}dyooy{2}dmddddhhhhyhN{1}d.
+  :o{2}yhhdNNMMMMMMMNNNmmdddhhhhhyym{1}Mh
+    .:{2}+sydNMMMMMNNNmmmdddhhhhhhmM{1}my
+       /m{2}MMMMMMNNNmmmdddhhhhhmMNh{1}s:
+    \`o{2}NMMMMMMMNNNmmmddddhhdmMNhs{1}+\`
+  \`s{2}NMMMMMMMMNNNmmmdddddmNMmhs{1}/.
+ /N{2}MMMMMMMMNNNNmmmdddmNMNdso{1}:\`
++M{2}MMMMMMNNNNNmmmmdmNMNdso{1}/-
+yM{2}MNNNNNNNmmmmmNNMmhs+/{1}-\`
+/h{2}MMNNNNNNNNMNdhs++/{1}-\`
+\`/{2}ohdmmddhys+++/:{1}.\`
+  \`-//////:--.
+`;
+
+const GENTOO_COLORS: Record<string, string> = {
+  "1": "text-[#9a8fd1]",
+  "2": "text-[#c8c8d0]"
+};
+
+const renderColored = (art: string, colors: Record<string, string>) => {
+  let parts = art.split(/\{(\d)\}/);
+  let out = [<span key="start">{parts[0]}</span>];
+
+  for (let i = 1; i < parts.length; i += 2) {
+    out.push(
+      <span key={i} className={colors[parts[i]]}>
+        {parts[i + 1]}
+      </span>
+    );
+  }
+
+  return out;
+};
+
 const HomePage = () => {
   const [ready, setReady] = useState<boolean>(false);
 
@@ -93,11 +134,11 @@ const HomePage = () => {
         <p className={cn("text-left whitespace-pre leading-none")}>{TUX}</p>
         <p
           className={cn(
-            "text-left whitespace-pre leading-none",
-            "text-[#d70a53]"
+            "text-left whitespace-pre",
+            "leading-[calc(1em*17/19)]"
           )}
         >
-          {DEBIAN}
+          {renderColored(GENTOO, GENTOO_COLORS)}
         </p>
       </div>
       <div className={cn("flex flex-col justify-center gap-4", "pt-4")}>
